@@ -1,0 +1,48 @@
+# 1. DEFINIÇÃO DOS STAGES (Fases)
+# Define a ordem de execução. Se um stage falhar, o pipeline para.
+stages:
+  - build
+  - test
+  - deploy
+
+# 2. JOB: COMPILAR (BUILD)
+# Rodará no stage 'build'
+build_code:
+  stage: build
+  script:
+    - echo "Iniciando a compilação do projeto..."
+    # A linha abaixo seria o comando real para compilar (ex: npm run build, mvn package, etc.)
+    - echo "Simulação de compilação bem-sucedida."
+  # Define que o artefato gerado será usado nos próximos stages
+  artifacts:
+    paths:
+      - ./build_output/ # Exemplo: Salvar a pasta de build
+
+# 3. JOBS: TESTES
+# Rodarão no stage 'test' em paralelo
+unit_tests:
+  stage: test
+  script:
+    - echo "Executando testes unitários..."
+    - echo "Testes unitários OK."
+  # O 'needs' garante que este job só roda DEPOIS do 'build_code'
+  needs: ["build_code"]
+
+integration_tests:
+  stage: test
+  script:
+    - echo "Executando testes de integração..."
+    - echo "Testes de integração OK."
+  needs: ["build_code"]
+
+# 4. JOB: IMPLANTAÇÃO (DEPLOY)
+# Rodará no stage 'deploy'. Só executa se todos os testes passarem.
+deploy_production:
+  stage: deploy
+  script:
+    - echo "Iniciando a implantação em produção..."
+    # Comando real para deploy (ex: enviar para um servidor, K8s, etc.)
+    - echo "Simulação de deploy bem-sucedido."
+  # Este job só será executado para commits na branch principal (main ou master)
+  only:
+    - main
